@@ -1,0 +1,28 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.network "public_network"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.cpus = 4
+    vb.memory = "3072"
+    vb.name = "ruby100.dev.upc"
+    vb.customize ["modifyvm", :id, "--vram", "64"]
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+  end
+
+  config.vm.provision "Install Base UPC Development Environment", type: "shell", path: "https://gist.githubusercontent.com/UPC-Developers/d984fffbd9e61907c58d/raw/base.development.upc.sh"
+  config.vm.provision "Install Ruby 100 Class Development Environment", type: "shell", path: "https://gist.githubusercontent.com/UPC-Developers/e5cbb4abc06d9186626f/raw/ruby100.development.upc.sh"
+  config.vm.provision "Install Ruby 100 Class Development Environment Step 2", type: "shell", path: "https://gist.githubusercontent.com/UPC-Developers/a6b1055631bdc24eb31f/raw/ruby100-2.development.upc.sh"
+  
+  # Feeling weird about someone else picking your super user password? 
+  # Run "openssl passwd -1"; it will prompt you for a password and use that password to output a new password hash.
+  # Replace the hash below with the hash you have generated.
+  # config.vm.provision "Change Superuser Password", type: "shell", inline: "echo 'vagrant:$1$8qbfwI0n$gdFmESMjqf0SIVpXPD4Hj.' | chpasswd -e"
+  
+  config.vm.provision "Reboot!", type: "shell", inline: "sudo shutdown -r now"
+end
